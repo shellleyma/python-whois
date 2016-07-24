@@ -6,7 +6,7 @@
 # \ \_\   \ \_\ \_\\ \_\ \_\\/\_____\\ \_____\\ \_\ \_\ 
 #  \/_/    \/_/\/_/ \/_/ /_/ \/_____/ \/_____/ \/_/ /_/ 
 
-import error
+from . import error
 import re 
 import sys
 import os 
@@ -45,7 +45,7 @@ class Parser(object):
 			logging.basicConfig(level=logging.DEBUG)
 			logging.debug("__init__: DEBUG is set to True")
 
-		self.domain = unicode(domain, "utf-8").encode("idna")
+		self.domain = str(domain)
 
 		if not text: 
 			raise error.InvalidInputText(text)
@@ -63,13 +63,19 @@ class Parser(object):
 
 		self.parseDefaultConf = {} 
 		logging.debug("__init__: Loading default tld configuration file") 
-		execfile(os.path.join(self.tldPath, "default"), {}, self.parseDefaultConf)
+		# execfile(os.path.join(self.tldPath, "default"), {}, self.parseDefaultConf) #old py2
+		with open(os.path.join(self.tldPath, "default")) as f:
+				code = compile(f.read(), os.path.join(self.tldPath, "default"), 'exec')
+				exec(code, {}, self.parseDefaultConf)
 		self.parseDefaultConf = self.parseDefaultConf.get("parse")
 
 		self.parseConf = {}
 
 		try:
-			execfile(os.path.join(self.tldPath, self.tld), {}, self.parseConf)
+			# execfile(os.path.join(self.tldPath, self.tld), {}, self.parseConf)
+			with open(os.path.join(self.tldPath, self.tld)) as f:
+				code = compile(f.read(), os.path.join(self.tldPath, self.tld), 'exec')
+				exec(code, {}, self.parseConf)
 		
 			self.parseConf = self.parseConf.get("parse")
 
@@ -113,7 +119,10 @@ class Parser(object):
 
 					logging.debug("__init__: Loading configuration file of tld name %s"%(lcTLD))
 
-					execfile(os.path.join(self.tldPath, "%s"%(lcTLD)), {}, lcConf)
+					# execfile(os.path.join(self.tldPath, "%s"%(lcTLD)), {}, lcConf)
+					with open(os.path.join(self.tldPath, "%s"%(lcTLD))) as f:
+						code = compile(f.read(), os.path.join(self.tldPath, "%s"%(lcTLD)), 'exec')
+						exec(code, {}, lcConf)
 					lcConf = lcConf.get("parse")
 
 					self.parseConf.update(lcConf.get(lcWS))

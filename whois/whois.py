@@ -12,10 +12,13 @@ import socket
 import re
 import logging
 import urllib 
-import urllib2
+try:
+    import urllib.request as urllib2  #py3
+except ImportError:
+    import urllib2   #py2
 
-import error
-import flags
+from . import error
+from . import flags
 
 class Whois(object):
 	def __init__(self, domain, debug=False):
@@ -23,8 +26,8 @@ class Whois(object):
 			logging.basicConfig(level=logging.DEBUG)
 			logging.debug("__init__: DEBUG is set to True")
 
-		self.domain = unicode(domain, "utf-8").encode("idna")
-		self.tld = self.domain.split(".")[-1]
+		self.domain = str(domain)
+		self.tld = self.domain.split('.')[-1]
 
 		self.currPath = os.path.dirname(os.path.realpath(__file__))
 		self.tldPath = os.path.join(self.currPath, "tlds")
@@ -39,7 +42,10 @@ class Whois(object):
 			logging.debug("__init__: Loading tld configuration file...")
 
 			_settings = {}
-			execfile(os.path.join(self.tldPath, self.tld), {}, _settings)
+			# execfile(os.path.join(self.tldPath, self.tld), {}, _settings)
+			with open(os.path.join(self.tldPath, self.tld)) as f:
+				code = compile(f.read(), os.path.join(self.tldPath, self.tld), 'exec')
+				exec(code, {}, _settings)
 
 			if "server" in _settings:
 				logging.debug("__init__: Settings: %s"%(_settings["server"]))
@@ -67,7 +73,7 @@ class Whois(object):
 			req = urllib2.Request((whoisServer.endswith("?") and whoisServer or whoisServer+"?") + param)
 
 		data = urllib2.urlopen(req).read()
-		print data 
+		print( data )
 
 		return data 
 		
@@ -92,7 +98,7 @@ class Whois(object):
 
 		logging.debug("sendQuery: Sending data.. %s"%(msg))
 
-		s.send(msg)
+		s.send(msg.encode())
 		
 		result = ""
 
@@ -102,7 +108,7 @@ class Whois(object):
 			if not buffer: 
 				break 
 
-			result += buffer
+			result += buffer.decode()
 
 		finalResult = result.replace("\r\n", "\n")
 
