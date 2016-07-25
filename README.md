@@ -1,4 +1,6 @@
 python-whois  [![Build Status](https://travis-ci.org/relip/python-whois.svg)](https://travis-ci.org/relip/python-whois)
+
+MODIFIED from https://github.com/relip/python-whois, just for python3
 ============
 
 The library that retrieves domain information and ip allocation information (WiP) from the server.
