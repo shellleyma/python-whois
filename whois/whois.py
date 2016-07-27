@@ -11,7 +11,8 @@ import os
 import socket
 import re
 import logging
-import urllib 
+import urllib
+import random
 try:
     import urllib.request as urllib2  #py3
 except ImportError:
@@ -57,7 +58,11 @@ class Whois(object):
 		'''Choose whois server by detecting tld of given domain.'''
 		if "host" in self.settings:
 			logging.debug("chooseServer: Whois server addr: %s"%(self.settings["host"]))
-			return self.settings["host"]
+
+			host_array=self.settings["host"].split('|')
+			random.shuffle(host_array)
+			return host_array[0]
+			# return self.settings["host"]
 		else:
 			logging.debug("chooseServer: Whois server addr: %s"%(self.tld + ".whois-servers.net"))
 			return self.tld + ".whois-servers.net"
