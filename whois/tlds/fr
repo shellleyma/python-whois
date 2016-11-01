@@ -1,0 +1,19 @@
+server = {
+	"host": "whois.nic.fr",
+	"port": 43,
+}
+
+parse = {
+	"default": {
+		"NotFound": "NOT FOUND",
+		
+		"DomainName": "domain:(.+)",
+		"CreationDate": "created:(.+)",
+		"ExpirationDate": "Expiry Date:(.+)",
+		"Registrar": "registrar:(.+)",
+		"Status": "status:(.+)",
+		
+		"NameServer": "nserver:(.+)",		
+		
+	}
+}
